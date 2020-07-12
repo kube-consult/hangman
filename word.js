@@ -7,36 +7,37 @@ class Word {
     }
     create() {
         const arr = this.name.split("");
-        let count = 0;
         arr.forEach(element => {
-            this.letters.push(global['let_' + element] = new letter(element));
+            this.letters.push(new letter(element));
         });
     }
     format() {
-        console.log("entered format");
         this.wordFmt = "";
         this.letters.forEach(element => {
-            let pf = 'let_' + element.returnChar();
-            pf = pf.replace(/^Let_/gi, "");
-            this.wordFmt = this.wordFmt + " " + pf;
+            if (element.name === " ") {
+                this.wordFmt = this.wordFmt + "  ";
+            } else {
+                this.wordFmt = this.wordFmt + " " + element.char;
+            }
         });
+        console.log("\n" + this.wordFmt + "\n");
+
     }
     guess(guess) {
+        let resbool = false;
         this.letters.forEach(element => {
-            'let_' + element.return(guess);
+            const res = element.return(guess);
+            if (res === true){
+                console.log("\nCorrect Guess " + guess + " is a letter in the artist string!!\n");
+                resbool = true;
+            }
         });
+        if (!resbool === true){
+        console.log("\nFailed Guess " + guess + " is not a letter in the artist string.\n");
+        }
+        this.format();
     }
 }
-
-let words = new Word("dfdfgpp paul");
-console.log(words);
-words.create();
-words.guess("p");
-words.guess("g");
-words.guess("d");
-const pf = let_p.name;
-words.format();
-console.log(words, words.wordFmt, pf);
 
 module.exports = Word;
 

@@ -1,80 +1,73 @@
 const Word = require("./word");
 var inquirer = require("inquirer")
-const artists = ["perl jam","fleetwood mac"]
+const artists = ["perl jam", "fleetwood mac"]
 
 class Game {
     constructor() {
-        Game.count = 10;
+        this.count = 0;
     }
-    continue() {
+    async continue() {
 
-        inquirer.prompt([
+        return inquirer.prompt([
             {
-                type: "checkbox",
-                message: "Do you wish to continue?",
+                type: "confirm",
+                message: "Do you wish to play again?",
                 name: "exiting",
-                choices: [
-                    "Y",
-                    "N"
-                ]
             }
-        ]).then(function (data) {
-
-        });
-
+        ])
     }
-    pickLetter() {
-        if (Game.count = 0){
-            console.log("No more guesses - you LOSE - word is.... ")
-            console.log(words.name);
-            games.continue();
+    async makeAGuess() {
+        const { letterChoice }  = await this.pickLetter(); 
+        words.guess(letterChoice);
+        if (!words.wordFmt.includes("_")){
+            console.log("\n" + "***** You Win - word is.... ***** " + "\n");
+            console.log(words.wordFmt + "\n");
+            const { exiting}  = await this.continue();
+            if (exiting){
+                this.start();
+            } else {
+                process.exit(0);
+            }
+        } else if (this.count > 0) {
+            this.count--;
+            await this.makeAGuess();
+        } else {
+            console.log("No more guesses - you LOSE - word is.... \n");
+            console.log(words.name + "\n");
+            const { exiting}  = await this.continue();
+            if (exiting === "true"){
+                console.log("entered true");
+                this.start();
+            } else {
+                process.exit(0);
+            }
         }
-        inquirer.prompt([
+    }
+
+    pickLetter() {
+        return inquirer.prompt([
             {
                 type: "input",
                 name: "letterChoice",
                 message: "Pick a letter"
             }
-        ]).then(function (data) {
-            Game.count = (parseInt(Game.count) - 1);
-            console.log("You have " + Game.count + " Guesses remaining.")
-            words.guess(data.letterChoice);
-            console.log(words);
-        });
-
-
+        ])
     }
-    GenerateWord() {
-        
+    start() {
+        console.log("Starting");
+        const artists = ["perl jam", "fleetwood mac","madonna,","michael jackson"]
+        const randomItem = artists[Math.floor(Math.random()*artists.length)];
+        words = new Word(randomItem);
+        words.create();
+        console.log("\nGuess the following artist by entering the correct letters one at a time.")
+        words.format();
+        this.count = ((words.wordFmt.length / 2) + 10);
+        console.log("You have " + this.count + " guesses to WIN.\n")
+        games.makeAGuess();
+
     }
 }
 
 let games = new Game();
-let words = new Word("Perl Jam");
-words.create();
-let count = 1;
-while (count < 10) {
-    console.log("loop count " + count);
-    count++;
-    init()
-
-}
-
-async function init() {
-    console.log("hi")
-    try {
-        console.log("loop inner  " + count);
-      const answers = await games.pickLetter();
-    } catch(err) {
-      console.log(err);
-    }
-  }
-
-
-
-//words.guess("P");
-//words.guess("g");
-//words.guess("d");
-//const pf = let_p.name;
-//words.format();
-//console.log(words, words.wordFmt, pf);
+let words = {}; 
+games.start();
