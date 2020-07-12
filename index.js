@@ -54,7 +54,6 @@ class Game {
         ])
     }
     start() {
-        console.log("Starting");
         const artists = ["perl jam", "fleetwood mac","madonna,","michael jackson"]
         const randomItem = artists[Math.floor(Math.random()*artists.length)];
         words = new Word(randomItem);
